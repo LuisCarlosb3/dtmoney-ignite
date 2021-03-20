@@ -4,9 +4,24 @@ import incomeImg from '../../assets/income.svg'
 import outcomeImg from '../../assets/outcome.svg'
 import totalImg from '../../assets/total.svg'
 import { TransactionsContext } from "../../TransactionsContext";
+import { formatAmount } from '../../utils/formaters';
 
 export function Summary(){
   const { transactions } = useContext(TransactionsContext)
+  const {deposits, whitdraws, total} = transactions.reduce((acc, transaction) => {
+    if(transaction.type === 'deposit'){
+      acc.deposits += transaction.amount
+      acc.total += transaction.amount
+    }else {
+      acc.whitdraws += transaction.amount
+      acc.total -= transaction.amount
+    }
+    return acc
+  }, {
+    deposits: 0,
+    whitdraws: 0,
+    total: 0
+  })
   return (
     <Container>
       <div>
@@ -14,21 +29,21 @@ export function Summary(){
           <p>Entradas</p>        
           <img src={incomeImg} alt="Entradas"/>
         </header>
-        <strong>R$500,00</strong>
+        <strong>{formatAmount(deposits)}</strong>
       </div>
       <div>
         <header>
           <p>Saídas</p>        
           <img src={outcomeImg} alt="Outcome"/>
         </header>
-        <strong>R$100,00</strong>
+        <strong>{formatAmount(whitdraws)}</strong>
       </div>
       <div className="highlight-background">
         <header>
           <p>Total</p>        
           <img src={totalImg} alt="Total"/>
         </header>
-        <strong>R400,00</strong>
+        <strong>{formatAmount(total)}</strong>
       </div>
     </Container>
   )
